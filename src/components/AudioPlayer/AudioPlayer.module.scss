@@ -1,0 +1,161 @@
+.audioPlayer {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  z-index: 100;
+  color: white;
+  min-width: 400px;
+  max-width: 500px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateX(-50%) translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+}
+
+.trackInfo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  overflow: hidden;
+}
+
+.albumCover {
+  width: 65px;
+  height: 65px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 18px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.trackDetails {
+  overflow: hidden;
+  flex: 1;
+}
+
+.trackTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.3px;
+}
+
+.artistName {
+  margin: 6px 0 0;
+  font-size: 14px;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  margin-left: 24px;
+}
+
+.controlButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+  }
+  
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: none;
+    }
+  }
+}
+
+.playPauseButton {
+  margin-right: 12px;
+  background: linear-gradient(135deg, #ff7eb3, #ff758c);
+  box-shadow: 0 4px 15px rgba(255, 121, 175, 0.4);
+  
+  &:hover {
+    box-shadow: 0 6px 20px rgba(255, 121, 175, 0.6);
+  }
+  
+  &:disabled {
+    background: linear-gradient(135deg, #ff7eb3, #ff758c);
+    opacity: 0.4;
+  }
+}
+
+.loopButton {
+  font-size: 16px;
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.1);
+  
+  &.active {
+    opacity: 1;
+    color: #1db954; /* Spotify green color for active state */
+    background: rgba(29, 185, 84, 0.15);
+    box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+  }
+}
+
+/* Add responsive adjustments */
+@media (max-width: 580px) {
+  .audioPlayer {
+    width: calc(100% - 40px);
+    max-width: none;
+    bottom: 15px;
+    padding: 14px 20px;
+  }
+  
+  .albumCover {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .controlButton {
+    width: 40px;
+    height: 40px;
+  }
+} 
