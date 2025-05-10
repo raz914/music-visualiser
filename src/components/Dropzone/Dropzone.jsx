@@ -1,6 +1,6 @@
 import s from "./Dropzone.module.scss";
 import { useDropzone } from "react-dropzone";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import useStore from "../../utils/store";
 import { fetchMetadata } from "../../utils/utils";
 
@@ -8,6 +8,19 @@ import Button from "../Button/Button";
 
 const Dropzone = () => {
   const { tracks, setTracks } = useStore();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Add listener for screen resize to detect mobile view
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -62,7 +75,8 @@ const Dropzone = () => {
       )} */}
 
       <div className={s.import}>
-        <p>Importez vos fichiers .mp3 en cliquant sur le bouton</p>
+        <p className={s.desktopText}>Importer vos fichiers MP3</p>
+        <p className={s.mobileText}>Importer MP3</p>
         <Button label={"Browse"} onClick={open} />
       </div>
     </div>

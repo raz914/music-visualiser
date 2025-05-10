@@ -33,11 +33,11 @@ class Star {
     // Extrude settings (flat by default)
     const extrudeSettings = {
       steps: 1,
-      depth: 0.5,
+      depth: 1.5,
       bevelEnabled: true,
-      bevelThickness: 0.15,
-      bevelSize: 0.15,
-      bevelSegments: 2,
+      bevelThickness: 0.3,
+      bevelSize: 0.3,
+      bevelSegments: 20,
     };
 
     // Material for lighting and bloom

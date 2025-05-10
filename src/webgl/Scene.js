@@ -4,6 +4,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
+import { enhanceGUI } from "../utils/gui-enhancer";
+import { loadVisualizerSettings, saveVisualizerSetting, resetVisualizerSettings } from "../utils/settings-manager";
 
 // post processing
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -36,7 +38,7 @@ class Scene {
     this.setupCamera();
     this.setupRenderer();
     this.setupControls();
-    this.setupStats();
+    // this.setupStats();
     this.setupPostProcessing();
     this.setupGUI();
 
@@ -48,16 +50,44 @@ class Scene {
   }
 
   setupGUI() {
-    this.gui = new GUI();
-
+    this.gui = new GUI({
+      width: 300,
+      title: 'Controls',
+      container: document.body
+    });
+    
+    // Position the GUI at the top left of the screen instead of right
+    const guiElement = this.gui.domElement;
+    guiElement.style.position = 'absolute';
+    guiElement.style.top = '24px';
+    guiElement.style.left = '24px'; // Changed from right to left
+    guiElement.style.right = 'auto'; // Remove right positioning
+    guiElement.style.zIndex = '2'; // Lower z-index so it doesn't cover everything
+    
+    // Load initial settings for board (default visualizer)
+    const initialSettings = loadVisualizerSettings(1); // Board is index 1
+    if (initialSettings && initialSettings.bloom) {
+      this.bloomParams.threshold = initialSettings.bloom.threshold;
+      this.bloomParams.strength = initialSettings.bloom.strength;
+      this.bloomParams.radius = initialSettings.bloom.radius;
+      
+      // Apply loaded settings to bloom pass
+      this.bloomPass.threshold = this.bloomParams.threshold;
+      this.bloomPass.strength = this.bloomParams.strength;
+      this.bloomPass.radius = this.bloomParams.radius;
+    }
+    
     this.bloomFolder = this.gui.addFolder("Bloom");
+    this.bloomFolder.close(); // Close the bloom folder by default
     this.bloomFolder
       .add(this.bloomParams, "threshold", 0, 1)
       .onChange((value) => {
-        console.log(value,"helllo")
-          
-        
         this.bloomPass.threshold = value;
+        
+        // Save the setting for current visualizer
+        if (this.currentVisualizerIndex !== undefined) {
+          saveVisualizerSetting(this.currentVisualizerIndex, 'bloom', 'threshold', value);
+        }
       })
       .listen(); // rafraichit visuellement la GUI avec la nouvelle valeur
 
@@ -65,6 +95,11 @@ class Scene {
       .add(this.bloomParams, "strength", 0, 3)
       .onChange((value) => {
         this.bloomPass.strength = value;
+        
+        // Save the setting for current visualizer
+        if (this.currentVisualizerIndex !== undefined) {
+          saveVisualizerSetting(this.currentVisualizerIndex, 'bloom', 'strength', value);
+        }
       })
       .listen();
 
@@ -72,8 +107,36 @@ class Scene {
       .add(this.bloomParams, "radius", 0, 1)
       .onChange((value) => {
         this.bloomPass.radius = value;
+        
+        // Save the setting for current visualizer
+        if (this.currentVisualizerIndex !== undefined) {
+          saveVisualizerSetting(this.currentVisualizerIndex, 'bloom', 'radius', value);
+        }
       })
       .listen();
+    
+    // Add reset button to reset current visualizer settings
+    this.bloomFolder.add({
+      resetSettings: () => {
+        if (this.currentVisualizerIndex !== undefined) {
+          const defaultSettings = resetVisualizerSettings(this.currentVisualizerIndex);
+          if (defaultSettings && defaultSettings.bloom) {
+            // Update bloom parameters
+            this.bloomParams.threshold = defaultSettings.bloom.threshold;
+            this.bloomParams.strength = defaultSettings.bloom.strength;
+            this.bloomParams.radius = defaultSettings.bloom.radius;
+            
+            // Apply to bloom pass
+            this.bloomPass.threshold = defaultSettings.bloom.threshold;
+            this.bloomPass.strength = defaultSettings.bloom.strength;
+            this.bloomPass.radius = defaultSettings.bloom.radius;
+          }
+        }
+      }
+    }, 'resetSettings').name('Reset Settings');
+      
+    // Apply our custom GUI enhancement
+    enhanceGUI(this.gui);
   }
 
   setupPostProcessing() {
@@ -179,9 +242,15 @@ class Scene {
   }
 
   pickVisualizer(index) {
+    // Store the current visualizer index
+    this.currentVisualizerIndex = index;
+    
     // on remove le group qui est rendu
     this.scene.remove(this.currentObject.group);
 
+    // Load settings for the selected visualizer
+    const settings = loadVisualizerSettings(index);
+    
     // on change le current object
     switch (index) {
       case 0:
@@ -196,43 +265,49 @@ class Scene {
         break;
       case 2:
         // logo iut
-        this.bloomParams.threshold = 0.6;
-        this.bloomPass.threshold = 0.6;
-
         this.camera.position.z = 5;
         this.currentObject = this.logoIut;
         break;
       case 3:
         // cover
-        this.bloomParams.threshold = 0.6;
-        this.bloomPass.threshold = 0.6;
-
         this.camera.position.z = 20;
         this.currentObject = this.cover;
+        
+        // Update Cover-specific controls if they exist
+        if (this.cover.folder && settings && settings.cover) {
+          this.cover.material.uniforms.uSize.value = settings.cover.uSize || 4;
+        }
         break;
       case 4:
         // heart
-        this.bloomParams.threshold = 0.2;
-        this.bloomPass.threshold = 0.2;
         this.camera.position.z = 20;
         this.currentObject = this.heart;
         break;
       case 5:
         // star
-        this.bloomParams.threshold = 0.2;
-        this.bloomPass.threshold = 0.6;
         this.camera.position.z = 20;
         this.currentObject = this.star;
         break;
       case 6:
         // crown
-        this.bloomParams.threshold = 0.2;
-        this.bloomPass.threshold = 0.2;
-        this.camera.position.z = 20;
+        this.camera.position.z = 16;
         this.currentObject = this.crown;
         break;
       default:
         break;
+    }
+
+    // Apply loaded bloom settings if available
+    if (settings && settings.bloom) {
+      // Update bloom parameters
+      this.bloomParams.threshold = settings.bloom.threshold;
+      this.bloomParams.strength = settings.bloom.strength;
+      this.bloomParams.radius = settings.bloom.radius;
+      
+      // Apply to bloom pass
+      this.bloomPass.threshold = settings.bloom.threshold;
+      this.bloomPass.strength = settings.bloom.strength;
+      this.bloomPass.radius = settings.bloom.radius;
     }
 
     // on add le nouveau group
@@ -240,7 +315,7 @@ class Scene {
   }
 
   tick = (time, deltaTime, frame) => {
-    this.stats.begin();
+    // this.stats.begin();
 
     // this.renderer.render(this.scene, this.camera);
     this.composer.render(); // prend le relais sur le renderer pour le post-processing
@@ -251,7 +326,7 @@ class Scene {
       this.currentObject.update(time, deltaTime);
     }
 
-    this.stats.end();
+    // this.stats.end();
   };
 }
 

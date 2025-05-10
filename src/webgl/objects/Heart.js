@@ -23,11 +23,11 @@ class Heart {
     // Extrude settings (flat by default)
     const extrudeSettings = {
       steps: 1,
-      depth: 0.5,
+      depth: 1.5,
       bevelEnabled: true,
-      bevelThickness: 0.15,
-      bevelSize: 0.15,
-      bevelSegments: 2,
+      bevelThickness: 0.3,
+      bevelSize: 0.3,
+      bevelSegments: 20,
     };
 
     // MeshBasicMaterial for flat, always-glowing look
@@ -40,7 +40,7 @@ class Heart {
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
-    this.mesh.position.set(0, 0, 0);
+    this.mesh.position.set(0, 1.5, 0);
     this.mesh.scale.set(1.2, 1.2, 0.7); // Make the heart smaller
     this.group.add(this.mesh);
   }
@@ -50,7 +50,7 @@ class Heart {
     if (audioController.fdata) {
       const avg = audioController.fdata.reduce((a, b) => a + b, 0) / audioController.fdata.length;
       // Pulse between 1 and 1.25 scale
-      const scale = 1 + 0.25 * (avg / 255);
+      const scale = 1 + 0.75 * (avg / 255);
       this.mesh.scale.set(1.2 * scale, 1.2 * scale, 0.7 + 0.3 * (avg / 255));
     }
     // Alternate color effect (blend between pink and yellow)

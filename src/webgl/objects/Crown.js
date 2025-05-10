@@ -41,11 +41,11 @@ class Crown {
     // Extrude settings
     const extrudeSettings = {
       steps: 1,
-      depth: 0.5,
+      depth: 1.5,
       bevelEnabled: true,
-      bevelThickness: 0.15,
-      bevelSize: 0.15,
-      bevelSegments: 2,
+      bevelThickness: 0.3,
+      bevelSize: 0.3,
+      bevelSegments: 20,
     };
 
     // Gold material
@@ -64,17 +64,17 @@ class Crown {
 
     // Add the band (rectangle at the bottom)
     const bandGeometry = new THREE.BoxGeometry(7, 0.5, 0.55);
-    const bandMaterial = new THREE.MeshBasicMaterial({
+    this.bandMaterial = new THREE.MeshBasicMaterial({
       color: 0xffd700,
     });
-    const band = new THREE.Mesh(bandGeometry, bandMaterial);
-    band.position.set(0, -1.75, 0.1);
-    this.group.add(band);
+    this.band = new THREE.Mesh(bandGeometry, this.bandMaterial);
+    this.band.position.set(0, -1.75, 1.4);
+    this.group.add(this.band);
 
     // Add jewels (spheres) on each spike
     const jewelMaterialBlue = new THREE.MeshBasicMaterial({ color: 0x00bfff });
     const jewelMaterialRed = new THREE.MeshBasicMaterial({ color: 0xff4444 });
-    const jewelRadius = 0.22;
+    const jewelRadius = 0.17;
     const spikeJewels = [
       [-3.2, 2.5],  // First spike jewel
       [-0.8, 2.5],  // Second spike jewel
@@ -85,7 +85,7 @@ class Crown {
       const jewelGeo = new THREE.SphereGeometry(jewelRadius, 16, 16);
       const mat = i % 2 === 0 ? jewelMaterialBlue : jewelMaterialRed;
       const jewel = new THREE.Mesh(jewelGeo, mat);
-      jewel.position.set(x, y + 0.3, 0.3);
+      jewel.position.set(x, y + 0.3, 1.7);
       this.mesh.add(jewel);
     });
 
@@ -98,8 +98,11 @@ class Crown {
     bandJewels.forEach(([x, y], i) => {
       const jewelGeo = new THREE.SphereGeometry(jewelRadius * 0.8, 16, 16);
       const mat = i % 2 === 0 ? jewelMaterialRed : jewelMaterialBlue;
+
       const jewel = new THREE.Mesh(jewelGeo, mat);
-      jewel.position.set(x, y, 0.4);
+
+      jewel.position.set(x, y, 1.68);
+
       this.group.add(jewel);
     });
   }
@@ -111,14 +114,14 @@ class Crown {
       const intensity = avg / 255;
       
       // 1. Rotation effect - crown rotates based on music intensity
-      this.mesh.rotation.y = Math.sin(performance.now() * 0.001) * 0.2 * intensity;
+      this.group.rotation.y = Math.sin(performance.now() * 0.001) * 0.8 * intensity;
       
       // 2. Vertical bounce effect
       const bounce = Math.sin(performance.now() * 0.003) * 1.3 * intensity;
       this.group.position.y = bounce;
       
       // 3. Slight tilt based on beat
-      this.mesh.rotation.z = Math.sin(performance.now() * 0.002) * 0.7 * intensity;
+      this.group.rotation.z = Math.sin(performance.now() * 0.002) * 0.7 * intensity;
       
       // 4. Jewel animation - make jewels pulse with different timing
       this.mesh.children.forEach((jewel, i) => {
@@ -135,11 +138,18 @@ class Crown {
     
     // Apply color to main crown and band
     this.material.color.copy(blended);
+    this.bandMaterial.color.copy(blended);
     
     // Create halo effect by adjusting emissive (if needed)
     if (this.material.emissive) {
       const emissiveIntensity = (Math.sin(performance.now() * 0.002) + 1) / 4;
       this.material.emissive.copy(blended).multiplyScalar(emissiveIntensity);
+    }
+    
+    // Apply same emissive effect to band if needed
+    if (this.bandMaterial.emissive) {
+      const emissiveIntensity = (Math.sin(performance.now() * 0.002) + 1) / 4;
+      this.bandMaterial.emissive.copy(blended).multiplyScalar(emissiveIntensity);
     }
   }
 }

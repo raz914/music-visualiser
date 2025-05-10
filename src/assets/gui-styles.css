@@ -1,0 +1,150 @@
+/**
+ * Custom styles for lil-gui controls
+ * These will override the default lil-gui styles
+ */
+
+/* Main container styling */
+.lil-gui {
+  --background-color: rgba(0, 0, 0, 0.2) !important;
+  --text-color: #ffffff !important;
+  --title-background-color: rgba(0, 0, 0, 0.3) !important;
+  --title-text-color: #ffffff !important;
+  --widget-color: rgba(255, 255, 255, 0.1) !important;
+  --hover-color: rgba(255, 255, 255, 0.15) !important;
+  --focus-color: #ff50ff !important;
+  --number-color: #ff50ff !important;
+  --string-color: #ff50ff !important;
+  
+  border-radius: 8px !important;
+  backdrop-filter: blur(5px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  border-left: 2px solid rgba(255, 50, 255, 0.5) !important;
+  max-width: 300px !important;
+  font-family: 'Lato', sans-serif !important;
+  padding: 8px 10px !important;
+}
+
+/* Title styles */
+.lil-gui .title {
+  font-weight: 600 !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Folder title */
+.lil-gui .title:hover {
+  color: #ff50ff !important;
+}
+
+/* Controller row styles */
+.lil-gui .controller {
+  border-radius: 4px !important;
+  overflow: hidden !important;
+  margin-bottom: 3px !important;
+  padding: 2px 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.lil-gui .controller:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Active controller animation */
+.lil-gui .controller.active-control {
+  animation: pulse 0.3s ease;
+  background-color: rgba(255, 80, 255, 0.1) !important;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); background-color: rgba(255, 80, 255, 0.1); }
+  50% { transform: scale(1.02); background-color: rgba(255, 80, 255, 0.2); }
+  100% { transform: scale(1); background-color: rgba(255, 80, 255, 0.1); }
+}
+
+/* Controller name */
+.lil-gui .controller .name {
+  font-size: 0.7rem !important;
+  letter-spacing: 0.5px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+}
+
+/* Slider styles */
+.lil-gui .slider {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;
+  margin-right: 4px !important;
+}
+
+.lil-gui .slider .fill {
+  background-color: rgba(255, 80, 255, 0.7) !important;
+  height: 100% !important;
+  border-right: 2px solid #ff50ff !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Number input styles */
+.lil-gui .controller input {
+  color: #ff50ff !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 2px 5px !important;
+  font-weight: bold !important;
+  width: 50px !important;
+  text-align: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.lil-gui .controller input:focus {
+  outline: 1px solid rgba(255, 80, 255, 0.8) !important;
+  box-shadow: 0 0 8px rgba(255, 80, 255, 0.3) !important;
+}
+
+/* Folder styles */
+.lil-gui .children {
+  margin-left: 0 !important;
+  border-left: 1px solid rgba(255, 80, 255, 0.3) !important;
+  padding-left: 8px !important;
+}
+
+/* Enhanced GUI - specific additions */
+.lil-gui.enhanced-gui {
+  transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+.lil-gui.enhanced-gui:hover {
+  opacity: 1 !important;
+}
+
+/* Button styling */
+.lil-gui button {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 80, 255, 0.5) !important;
+  border-radius: 4px !important;
+  padding: 2px 8px !important;
+  font-size: 0.7rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.lil-gui button:hover {
+  background-color: rgba(255, 80, 255, 0.2) !important;
+  border-color: #ff50ff !important;
+}
+
+/* Close button */
+.lil-gui .close-button {
+  font-size: 0.8rem !important;
+  background: none !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.lil-gui .close-button:hover {
+  color: #ff50ff !important;
+} 

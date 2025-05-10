@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import "./index.scss";
+import "./assets/gui-styles.css";
 import App from "./App.jsx";
 import audioController from "./utils/AudioController";
 

@@ -6,6 +6,7 @@ const AudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   console.log("AudioPlayer rendering, currentTrack:", currentTrack);
 
@@ -15,6 +16,16 @@ const AudioPlayer = () => {
       console.log("AudioPlayer: Setting up audioController");
       audioController.setup();
     }
+
+    // Add listener for screen resize to detect mobile view
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Listen for track changes via custom events
@@ -98,6 +109,18 @@ const AudioPlayer = () => {
     setIsLooping(looping);
   };
 
+  const handlePreviousTrack = () => {
+    if (!audioController.audio) return;
+    audioController.previousTrack();
+    setIsPlaying(true);
+  };
+
+  const handleNextTrack = () => {
+    if (!audioController.audio) return;
+    audioController.nextTrack();
+    setIsPlaying(true);
+  };
+
   // Manual track selection function for debugging
   const forceUpdateTrack = () => {
     const track = audioController.getCurrentTrack();
@@ -111,7 +134,7 @@ const AudioPlayer = () => {
 
   // Always render the player controls, but with placeholder content if no track
   return (
-    <div className={styles.audioPlayer}>
+    <div className={`${styles.audioPlayer} ${isMobile ? styles.mobilePlayer : ''}`}>
       <div className={styles.trackInfo}>
         {currentTrack ? (
           <>
@@ -141,12 +164,30 @@ const AudioPlayer = () => {
       
       <div className={styles.controls}>
         <button 
+          className={`${styles.controlButton} ${styles.previousButton}`}
+          onClick={handlePreviousTrack}
+          disabled={!currentTrack}
+          aria-label="Previous Track"
+        >
+          ⏮
+        </button>
+        
+        <button 
           className={`${styles.controlButton} ${styles.playPauseButton}`}
           onClick={handlePlayPause}
           disabled={!currentTrack && !audioController.isPlaying()}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? "❚❚" : "▶"}
+        </button>
+        
+        <button 
+          className={`${styles.controlButton} ${styles.nextButton}`}
+          onClick={handleNextTrack}
+          disabled={!currentTrack}
+          aria-label="Next Track"
+        >
+          ⏭
         </button>
         
         <button 

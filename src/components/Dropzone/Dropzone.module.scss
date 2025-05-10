@@ -34,7 +34,8 @@
 
   .import {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-end;
     // position: absolute;
     // bottom: 12px;
     // right: 12px;
@@ -44,5 +45,72 @@
       max-width: 200px;
       margin: 0;
     }
+    
+    .desktopText {
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 5px 10px;
+      border-radius: 12px;
+      max-width: 220px;
+      text-align: center;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    
+    .mobileText {
+      display: none; /* Hide on desktop */
+    }
+    
+    button {
+      transition: transform 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      position: fixed;
+      bottom: 180px; /* Position above the audio player */
+      right: 15px;
+      flex-direction: column;
+      align-items: flex-end;
+      
+      .desktopText {
+        display: none; /* Hide desktop text on mobile */
+      }
+      
+      .mobileText {
+        display: block;
+        font-size: 0.75rem;
+        margin-bottom: 5px;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 4px 8px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 100px;
+        white-space: nowrap;
+      }
+      
+      button {
+        background-color: rgba(0, 0, 0, 0.7);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        padding: 7px 15px;
+        font-size: 1rem;
+        z-index: 90;
+      }
+    }
+  }
+}
+
+/* Mobile style overrides */
+@media (max-width: 768px) {
+  .dropzone {
+    position: static; /* Reset position for mobile */
+    z-index: auto;
   }
 }

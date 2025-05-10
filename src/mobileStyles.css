@@ -1,0 +1,246 @@
+/* Mobile-specific styles */
+
+/* Fix for white borders on mobile devices */
+html, body, #root {
+  background-color: #000000;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure canvas covers the entire screen */
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure React root element fills the entire screen */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .mobile-view {
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Adjust spacing between components on mobile */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Better touch targets for mobile buttons */
+  button {
+    min-height: 36px;
+    min-width: 36px;
+  }
+  
+  /* Prevent text zoom on input focus */
+  input, textarea, select, button {
+    font-size: 16px !important;
+  }
+  
+  /* Controls GUI positioning for mobile */
+  .lil-gui {
+    max-width: 250px !important;
+    font-size: 0.9em !important;
+  }
+  
+  /* Make GUI wider when open */
+  .lil-gui:not(.closed) {
+    max-width: 300px !important;
+    width: 85% !important;
+  }
+  
+  /* Larger sliders for touch */
+  .lil-gui .slider {
+    height: 12px !important;
+    margin: 8px 0 !important;
+  }
+  
+  /* Bigger touch area for sliders */
+  .lil-gui .controller {
+    padding: 8px 10px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  /* More space between name and control */
+  .lil-gui .controller .name {
+    margin-bottom: 6px !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  /* Larger input boxes for numbers */
+  .lil-gui .controller input {
+    width: 60px !important;
+    height: 30px !important;
+    padding: 4px 6px !important;
+  }
+  
+  /* Enhanced audio player for mobile */
+  .audioPlayer {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  
+  /* Make browse button more visible */
+  .dropzone .import button {
+    opacity: 0.9;
+    z-index: 99 !important;
+  }
+
+  /* Enhance mobile import text */
+  .dropzone .import .mobileText {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+  }
+
+  .import {
+    position: fixed;
+    bottom: 180px;  /* Adjust this value to move up/down */
+    right: 65px;    /* Adjust this value to move left/right */
+  }
+}
+
+/* Portrait orientation specific styles */
+@media (max-width: 768px) and (orientation: portrait) {
+  /* Even wider controls in portrait mode */
+  .lil-gui:not(.closed) {
+    max-width: 340px !important;
+    width: 95% !important;
+  }
+  
+  /* Make sure slider containers have enough space */
+  .lil-gui .controller {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 10px !important;
+  }
+  
+  /* Full width sliders for portrait */
+  .lil-gui .slider {
+    width: 100% !important;
+    margin-right: 0 !important;
+    height: 16px !important; /* Even taller for better touch */
+  }
+  
+  /* Stack inputs below sliders */
+  .lil-gui .controller .widget {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  /* Position number inputs */
+  .lil-gui .controller input {
+    margin-top: 6px !important;
+    align-self: flex-end !important;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  /* Adjust audio controls spacing */
+  .controlButton {
+    margin: 0 2px;
+  }
+  
+  /* Ensure content doesn't overflow viewport bounds */
+  * {
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+  
+  /* Smaller controls GUI for very small screens, but still usable */
+  .lil-gui {
+    max-width: 200px !important;
+    font-size: 0.85em !important;
+  }
+  
+  /* But wider when open */
+  .lil-gui:not(.closed) {
+    max-width: 280px !important;
+    width: 90% !important;
+  }
+  
+  /* Ensure Browse button is positioned correctly */
+  .dropzone .import {
+    bottom: 85px !important;
+  }
+  
+  /* More compact text for very small screens */
+  .dropzone .import .mobileText {
+    font-size: 0.7rem !important;
+    padding: 3px 6px !important;
+  }
+}
+
+/* Portrait orientation for small screens */
+@media (max-width: 480px) and (orientation: portrait) {
+  /* Full width controls on small portrait screens */
+  .lil-gui:not(.closed) {
+    max-width: 320px !important;
+    width: 95% !important;
+  }
+}
+
+/* Fix position for mobile-oriented UI */
+body.mobile-view .toggleTracks {
+  bottom: 85px !important;
+}
+
+/* Enhanced close button on mobile */
+body.mobile-view .closeButton {
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.mobile-view .closeButton:active {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
+}
+
+/* Controls GUI mobile adjustment */
+body.mobile-view .lil-gui {
+  -webkit-tap-highlight-color: transparent;
+  z-index: 2 !important;
+}
+
+/* Better touch experience for sliders */
+body.mobile-view .lil-gui .slider {
+  cursor: pointer !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.mobile-view .lil-gui .slider:active {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Improve touch targets */
+body.mobile-view button, 
+body.mobile-view .toggleTracks,
+body.mobile-view span[role="button"] {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+body.mobile-view button:active, 
+body.mobile-view .toggleTracks:active,
+body.mobile-view span[role="button"]:active {
+  transform: scale(0.95);
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+  .wrapper {
+    height: -webkit-fill-available !important;
+  }
+} 

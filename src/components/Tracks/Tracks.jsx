@@ -12,7 +12,8 @@ import s from "./Tracks.module.scss";
 const Tracks = () => {
   // permet d'alterner entre true et false pour afficher / cacher le composant
   const [showTracks, setShowTracks] = useState(false);
-  const { tracks, setTracks } = useStore();
+  const [activeTab, setActiveTab] = useState("all"); // "all" or "favorites"
+  const { tracks, setTracks, favorites } = useStore();
 
   // écouter la variable tracks qui vient du store
   useEffect(() => {
@@ -66,6 +67,12 @@ const Tracks = () => {
     }
   };
 
+  // Get tracks to display based on active tab
+  const displayedTracks = activeTab === "all" ? tracks : favorites;
+  
+  // Debug info
+  console.log(`Tab: ${activeTab}, Tracks: ${displayedTracks.length}, Favorites: ${favorites.length}`);
+
   return (
     <>
       <div
@@ -80,6 +87,29 @@ const Tracks = () => {
       ${s.wrapper}
       ${showTracks ? s.wrapper_visible : ""}`}
       >
+        <button 
+          className={s.closeButton} 
+          onClick={() => setShowTracks(false)}
+          aria-label="Close tracklist"
+        >
+          ×
+        </button>
+        
+        <div className={s.tabs}>
+          <button 
+            className={`${s.tab} ${activeTab === "all" ? s.active : ""}`}
+            onClick={() => setActiveTab("all")}
+          >
+            All Tracks
+          </button>
+          <button 
+            className={`${s.tab} ${activeTab === "favorites" ? s.active : ""}`}
+            onClick={() => setActiveTab("favorites")}
+          >
+            Favorites ({favorites.length})
+          </button>
+        </div>
+
         <div className={s.tracks}>
           <div className={s.header}>
             <span className={s.order}>#</span>
@@ -87,17 +117,25 @@ const Tracks = () => {
             <span className={s.duration}>Durée</span>
           </div>
 
-          {tracks.map((track, i) => (
-            <Track
-              key={track.title + i}
-              title={track.title}
-              duration={track.duration}
-              cover={track.album.cover_xl}
-              // artists={track.artists}
-              src={track.preview}
-              index={i}
-            />
-          ))}
+          {displayedTracks.length > 0 ? (
+            displayedTracks.map((track, i) => (
+              <Track
+                key={track.id || `${track.title}-${i}`}
+                title={track.title}
+                duration={track.duration}
+                cover={track.album?.cover_xl || track.cover}
+                src={track.preview}
+                index={i}
+                track={track}
+              />
+            ))
+          ) : (
+            <div className={s.emptyState}>
+              {activeTab === "favorites" 
+                ? "No favorite tracks yet. Click the heart icon on a track to add it to your favorites." 
+                : "No tracks available. Search for tracks below."}
+            </div>
+          )}
         </div>
 
         <input
