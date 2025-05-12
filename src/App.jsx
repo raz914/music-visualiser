@@ -5,10 +5,27 @@ import Tracks from "./components/Tracks/Tracks";
 import Picker from "./components/Picker/Picker";
 import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 import { useEffect } from "react";
+import useStore from "./utils/store";
 
 import "./mobileStyles.css";
 
 function App() {
+  // Get the clearUnplayedTracks function from the store
+  const clearUnplayedTracks = useStore(state => state.clearUnplayedTracks);
+  
+  // Only do cleanup periodically, not on focus or startup
+  useEffect(() => {
+    // Only clear unplayed tracks periodically (every 30 minutes)
+    const cleanupInterval = setInterval(() => {
+      console.log('Periodic cleanup of unplayed tracks');
+      clearUnplayedTracks();
+    }, 30 * 60 * 1000); // 30 minutes
+    
+    return () => {
+      clearInterval(cleanupInterval);
+    };
+  }, [clearUnplayedTracks]);
+  
   // Add listener for viewport size to handle mobile layout
   useEffect(() => {
     const checkMobile = () => {

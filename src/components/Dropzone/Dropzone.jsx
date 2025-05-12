@@ -75,8 +75,8 @@ const Dropzone = () => {
       )} */}
 
       <div className={s.import}>
-        <p className={s.desktopText}>Importer vos fichiers MP3</p>
-        <p className={s.mobileText}>Importer MP3</p>
+        <p className={s.desktopText}>Import your MP3 files</p>
+        <p className={s.mobileText}>Import MP3</p>
         <Button label={"Browse"} onClick={open} />
       </div>
     </div>

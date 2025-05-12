@@ -78,13 +78,29 @@
   border-radius: 4px !important;
   overflow: hidden !important;
   margin-right: 4px !important;
+  cursor: grab !important;
+  will-change: transform !important; /* Optimize for animations */
+  touch-action: none !important; /* Disable browser handling */
+}
+
+.lil-gui .slider:active,
+.lil-gui .slider.slider-active {
+  cursor: grabbing !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 .lil-gui .slider .fill {
   background-color: rgba(255, 80, 255, 0.7) !important;
   height: 100% !important;
   border-right: 2px solid #ff50ff !important;
-  transition: all 0.2s ease !important;
+  will-change: width !important; /* Optimize width changes */
+  /* Transition removed for direct manipulation */
+}
+
+/* Enhanced active slider */
+.lil-gui .slider.slider-active .fill {
+  background-color: rgba(255, 80, 255, 0.9) !important;
+  box-shadow: 0 0 10px rgba(255, 80, 255, 0.7) !important;
 }
 
 /* Number input styles */

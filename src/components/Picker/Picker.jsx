@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import scene from "../../webgl/Scene";
 import s from "./Picker.module.scss";
+import useStore from "../../utils/store";
 
 const VISUALIZERS = [
   {
@@ -41,9 +42,25 @@ const VISUALIZERS = [
 ];
 
 const Picker = () => {
-  const [current, setCurrent] = useState(0);
+  // Get saved visualizer from store
+  const savedVisualizer = useStore(state => state.currentVisualizer);
+  const setCurrentVisualizer = useStore(state => state.setCurrentVisualizer);
+  
+  // Initialize with saved visualizer or default to index 0 (Line)
+  const [current, setCurrent] = useState(savedVisualizer !== null ? savedVisualizer : 0);
   const [isChanging, setIsChanging] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  // Set initial visualizer on component mount
+  useEffect(() => {
+    if (savedVisualizer !== null && savedVisualizer !== current) {
+      // Update the local state with the saved visualizer
+      setCurrent(savedVisualizer);
+      
+      // Apply the visualizer to the scene
+      scene.pickVisualizer(savedVisualizer);
+    }
+  }, [savedVisualizer, current]);
 
   const pickVisualizer = (index) => {
     if (index === current) return;
@@ -55,6 +72,9 @@ const Picker = () => {
     setTimeout(() => {
       // changer visuellement la liste
       setCurrent(index);
+
+      // Save to store for persistence
+      setCurrentVisualizer(index);
 
       // appeler la méthode qui permet de changer d'objet 3D
       scene.pickVisualizer(index);

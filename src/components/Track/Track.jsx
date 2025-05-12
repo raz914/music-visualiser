@@ -4,8 +4,8 @@ import s from "./Track.module.scss";
 import useStore from "../../utils/store";
 import { useState, useEffect } from "react";
 
-const Track = ({ title, cover, src, duration, artists, index, track }) => {
-  const { addToFavorites, removeFromFavorites, favorites } = useStore();
+const Track = ({ title, cover, src, duration, artists, index, track, album }) => {
+  const { addToFavorites, removeFromFavorites, favorites, updatePlayHistory } = useStore();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   
@@ -26,6 +26,7 @@ const Track = ({ title, cover, src, duration, artists, index, track }) => {
     duration,
     artists,
     src,
+    preview: src,
     album: { cover_xl: cover }
   };
   
@@ -37,7 +38,7 @@ const Track = ({ title, cover, src, duration, artists, index, track }) => {
         return fav.id === trackData.id;
       }
       // Otherwise compare by title and src
-      return fav.title === title && fav.src === src;
+      return fav.title === title && (fav.src === src || fav.preview === src);
     });
   }
   
@@ -71,6 +72,34 @@ const Track = ({ title, cover, src, duration, artists, index, track }) => {
     return minutes + ":" + seconds;
   };
 
+  // Format artists for display
+  const getArtistsDisplay = () => {
+    if (!artists) return null;
+    
+    if (Array.isArray(artists)) {
+      return artists.join(", ");
+    }
+    
+    return artists;
+  };
+
+  // Get album name if available
+  const getAlbumName = () => {
+    if (trackData.album && trackData.album.title) {
+      return trackData.album.title;
+    }
+    
+    if (album && typeof album === 'object' && album.title) {
+      return album.title;
+    }
+    
+    if (album && typeof album === 'string') {
+      return album;
+    }
+    
+    return "Unknown Album";
+  };
+
   const onClick = () => {
     // Make sure track information is complete
     if (!src) {
@@ -82,12 +111,16 @@ const Track = ({ title, cover, src, duration, artists, index, track }) => {
       console.warn("Missing track cover image");
     }
     
+    // Create a complete trackInfo object
     const trackInfo = {
+      ...trackData,
+      id: trackData.id,
       title: title || "Unknown Track",
-      cover: cover || "https://via.placeholder.com/150",
+      cover: cover || (track && track.album && track.album.cover_xl) || "https://placehold.co/600x400",
       duration: duration || 0,
       artists: artists || title || "Unknown Artist",
-      src
+      src: src,
+      preview: src
     };
     
     console.log("Track clicked, playing track:", trackInfo);
@@ -101,6 +134,11 @@ const Track = ({ title, cover, src, duration, artists, index, track }) => {
     // Play the track
     audioController.play(src, trackInfo, index);
     
+    // Update play history directly
+    if (updatePlayHistory) {
+      updatePlayHistory(trackInfo);
+    }
+    
     // Update the 3D scene cover if available
     if (scene && scene.cover && typeof scene.cover.setCover === 'function') {
       scene.cover.setCover(cover);
@@ -110,6 +148,11 @@ const Track = ({ title, cover, src, duration, artists, index, track }) => {
     
     // Also dispatch an event that AudioPlayer can listen for
     window.dispatchEvent(new CustomEvent('track-selected', { 
+      detail: { track: trackInfo }
+    }));
+    
+    // Force UI refresh
+    window.dispatchEvent(new CustomEvent('play-history-updated', { 
       detail: { track: trackInfo }
     }));
   };
@@ -137,18 +180,31 @@ const Track = ({ title, cover, src, duration, artists, index, track }) => {
   // Add debug class to check if we're properly detecting favorites
   const debugClass = isTrackFavorite ? `${s.favoriteBtn} ${s.active}` : s.favoriteBtn;
 
+  // Get the artist display string
+  const artistsDisplay = getArtistsDisplay();
+  
+  // Get album name if available
+  const albumName = getAlbumName();
+
   return (
     <div className={s.track} onClick={onClick}>
       <span className={s.order}>{index + 1}</span>
       <div className={s.title}>
-        <img src={cover} alt="" className={s.cover} />
+        <img 
+          src={cover || (track && track.album && track.album.cover_xl) || "https://placehold.co/600x400"} 
+          alt={title} 
+          className={s.cover}
+          onError={(e) => {
+            console.log("Album cover failed to load, using placeholder");
+            e.target.src = "https://placehold.co/600x400"; 
+          }}
+        />
         <div className={s.details}>
           <span className={s.trackName}>{title}</span>
-          {/* {artists.map((artist, i) => (
-            <span key={artist + i} className={s.artistName}>
-              {artist}
-            </span>
-          ))} */}
+          <div className={s.metadata}>
+            {artistsDisplay && <span className={s.artistName}>{artistsDisplay}</span>}
+            {albumName && <span className={s.albumName}>{albumName}</span>}
+          </div>
         </div>
       </div>
       <span className={s.duration}>{getSeconds()}</span>

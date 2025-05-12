@@ -74,10 +74,11 @@
     
     @media (max-width: 768px) {
       position: fixed;
-      bottom: 180px; /* Position above the audio player */
+      bottom: 200px; /* Position above the audio player */
       right: 15px;
       flex-direction: column;
       align-items: flex-end;
+      z-index: 5; /* Ensure it's above other elements */
       
       .desktopText {
         display: none; /* Hide desktop text on mobile */
@@ -107,10 +108,18 @@
   }
 }
 
-/* Mobile style overrides */
+/* Ensure the dropzone is always visible on mobile */
 @media (max-width: 768px) {
   .dropzone {
-    position: static; /* Reset position for mobile */
-    z-index: auto;
+    position: fixed; /* Fixed instead of static */
+    bottom: auto; /* Remove bottom positioning */
+    right: auto; /* Remove right positioning */
+    /* The .import element will handle positioning instead */
+    z-index: 5;
+    pointer-events: none; /* Allow clicks to pass through except for buttons */
+    
+    .import {
+      pointer-events: all; /* Re-enable pointer events for the import section */
+    }
   }
 }

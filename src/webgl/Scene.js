@@ -26,14 +26,15 @@ import Crown from "./objects/Crown";
 class Scene {
   constructor() {}
 
-  setup(canvas) {
+  // First phase of setup - initialize everything except showing objects
+  setupInitial(canvas) {
     this.canvas = canvas;
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
     this.currentObject = null;
 
-    // instantier la logique three.js
+    // Set up the base THREE.js environment
     this.setupScene();
     this.setupCamera();
     this.setupRenderer();
@@ -46,7 +47,64 @@ class Scene {
     this.setupGltfLoader();
 
     this.addEvents();
-    this.addObjects();
+    
+    // Initialize objects but don't add them to the scene yet
+    this.initializeObjects();
+  }
+
+  // Second phase - complete the setup by showing the appropriate visualizer
+  completeSetup() {
+    // Attempt to restore the last selected visualizer
+    const visualizerRestored = this.restoreLastVisualizer();
+    
+    // If no visualizer was restored, default to the board
+    if (!visualizerRestored) {
+      this.camera.position.z = 20;
+      this.scene.add(this.board.group);
+      this.currentObject = this.board;
+      this.currentVisualizerIndex = 1; // Index for board
+    }
+  }
+
+  // For backward compatibility
+  setup(canvas) {
+    this.setupInitial(canvas);
+    this.completeSetup();
+  }
+
+  // Initialize objects but don't add them to the scene yet
+  initializeObjects() {
+    // Initialize all visualizer objects
+    this.line = new Line();
+    this.board = new Board();
+    this.logoIut = new LogoIut();
+    this.cover = new Cover();
+    // this.cube = new Cube();
+    this.heart = new Heart();
+    this.star = new Star();
+    this.crown = new Crown();
+  }
+
+  // Method to restore the last selected visualizer from the store
+  restoreLastVisualizer() {
+    try {
+      // Try to get the store state
+      const storeState = window._getStoreState ? window._getStoreState() : null;
+      
+      if (storeState && storeState.currentVisualizer !== null) {
+        // Get the saved visualizer index
+        const visualizerIndex = storeState.currentVisualizer;
+        console.log("Restoring last visualizer:", visualizerIndex);
+        
+        // Set the visualizer
+        this.pickVisualizer(visualizerIndex);
+        return true;
+      }
+    } catch (error) {
+      console.error("Error restoring last visualizer:", error);
+    }
+    
+    return false;
   }
 
   setupGUI() {
@@ -89,7 +147,7 @@ class Scene {
           saveVisualizerSetting(this.currentVisualizerIndex, 'bloom', 'threshold', value);
         }
       })
-      .listen(); // rafraichit visuellement la GUI avec la nouvelle valeur
+      .listen(); // updates the GUI visually with the new value
 
     this.bloomFolder
       .add(this.bloomParams, "strength", 0, 3)
@@ -182,35 +240,6 @@ class Scene {
     document.body.appendChild(this.stats.dom);
   }
 
-  addObjects() {
-    // Déclaration des objets
-    this.line = new Line();
-    this.board = new Board();
-    this.logoIut = new LogoIut();
-    this.cover = new Cover();
-    // this.cube = new Cube();
-    this.heart = new Heart();
-    this.star = new Star();
-    this.crown = new Crown();
-    // ....
-
-    // ajout de l'objet à la scène par défaut
-    this.camera.position.z = 20;
-    this.scene.add(this.board.group);
-    this.currentObject = this.board;
-  }
-
-  onResize = () => {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
-
-    this.renderer.setSize(this.width, this.height);
-    this.composer.setSize(this.width, this.height);
-  };
-
   addEvents() {
     gsap.ticker.add(this.tick);
     window.addEventListener("resize", this.onResize);
@@ -245,13 +274,16 @@ class Scene {
     // Store the current visualizer index
     this.currentVisualizerIndex = index;
     
-    // on remove le group qui est rendu
-    this.scene.remove(this.currentObject.group);
+    // Only try to remove if we have a current object
+    if (this.currentObject && this.currentObject.group) {
+      // remove the rendered group
+      this.scene.remove(this.currentObject.group);
+    }
 
     // Load settings for the selected visualizer
     const settings = loadVisualizerSettings(index);
     
-    // on change le current object
+    // change the current object
     switch (index) {
       case 0:
         // line
@@ -310,8 +342,11 @@ class Scene {
       this.bloomPass.radius = settings.bloom.radius;
     }
 
-    // on add le nouveau group
-    this.scene.add(this.currentObject.group);
+    // Make sure we have a currentObject before trying to add its group
+    if (this.currentObject && this.currentObject.group) {
+      // add the new group
+      this.scene.add(this.currentObject.group);
+    }
   }
 
   tick = (time, deltaTime, frame) => {
@@ -327,6 +362,17 @@ class Scene {
     }
 
     // this.stats.end();
+  };
+
+  onResize = () => {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+
+    this.camera.aspect = this.width / this.height;
+    this.camera.updateProjectionMatrix();
+
+    this.renderer.setSize(this.width, this.height);
+    this.composer.setSize(this.width, this.height);
   };
 }
 
